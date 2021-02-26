@@ -1,0 +1,24 @@
+{
+  "name": "printkiosk-nw-app",
+  "version": "1.0.0",
+  "description": "Instagram printing kiosk",
+  "main": "index.html",
+  "scripts": {},
+  "author": "Vandalko",
+  "window": {
+    "frame": false,
+    "toolbar": false,
+    "kiosk": false,
+    "width": 1080,
+    "height": 1920,
+    "position": "center"
+  },
+  "chromium-args": "--kiosk --kiosk-printing --enable-kiosk-mode --disable-print-preview",
+  "license": "ISC",
+  "dependencies": {
+    "instagram-node": "^0.5.7",
+    "nodemailer": "^1.4.0",
+    "ssp": "0.0.8",
+    "winston": "^1.0.1"
+  }
+}

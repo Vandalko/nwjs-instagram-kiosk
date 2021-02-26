@@ -1,0 +1,13 @@
+{
+  "name": "printkiosk-build",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "^3.x",
+    "nw-builder": "^2.x"
+  },
+  "dependencies": {
+    "gulp-util": "^2.2.14",
+    "instagram-node": "^0.5.7",
+    "virtual-keyboard": "^1.25.3"
+  }
+}

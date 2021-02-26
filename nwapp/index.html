@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Instagram print</title>
+
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/keyboard.min.css">
+  <link rel="stylesheet" href="./css/styles.css">
+
+</head>
+<body>
+  <div class="top-container" data-bind="visible: !printing(), css: { 'landing-background': !showPhotos() && !query() && !printing() }">
+
+    <div class="landing-pricing" data-bind="visible: !showPhotos() && !query()">
+      2 фото<br/>
+      20 &#x20B4;
+    </div>
+
+    <!-- Landing help buttons -->
+    <div class="form-group landing-buttons-group" data-bind="visible: !showPhotos() && !query()">
+      <button class="btn landing-button btn-default" data-bind="event: { click: infoModal }">i</button>
+      <!-- TODO: enable multiple languages
+      <button class="btn landing-button btn-default">РУ</button>
+      <button class="btn landing-button btn-default">УКР</button>
+      <button class="btn landing-button btn-default">ENG</button>
+      -->
+    </div>
+
+    <!-- User & Tag search results -->
+    <div class="container search-results" data-bind="visible: !showPhotos() && query()">
+      <div class="search-spinner" data-bind="visible: searchResultsCount() <= 0">
+      </div>
+      <div class="col-sm-6">
+        <ul class="list-group" data-bind="template: { name: 'user-search-results-template', foreach: userSearchResult }"></ul>
+      </div>
+      <div class="col-sm-6">
+        <ul class="list-group" data-bind="template: { name: 'tag-search-results-template', foreach: tagSearchResult }"></ul>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="container" data-bind="visible: showPhotos()" style="height: 100%; width: 100%; padding: 0px;">
+      <header class="photos-header">
+      <!-- TODO: Enable later
+        <input id="query-new" type="text" class="query-new" placeholder="Шукати знову">
+        -->
+        <div class="photos-group photos-header-group">
+          <!-- ko if: showUser -->
+          <div class="photos-header-col photos-header-profile">
+            <img class="img-circle photos-header-profile-picture" data-bind="attr: { src: showUser().profile_picture, alt: showUser().username }" />
+            <span class="photos-header-profile-name" data-bind="text: showUser().username"></span>
+          </div>
+          <!-- /ko -->
+          <!-- ko if: showTag -->
+          <div class="photos-header-col photos-header-tag">
+            <span class="photos-header-tag-name" data-bind="text: showTag().name"></span>
+          </div>
+          <!-- /ko -->
+          <div class="photos-header-col">
+            <div class="photos-order-status">
+              <div class="photos-order-status-title">
+                <img src="./img/ico_photos.png" class="photos-order-status-ico">ВАШЕ ЗАМОВЛЕННЯ
+              </div>
+              <div class="photos-order-status-cost text-center">
+                <span data-bind="text: cartCost()"></span><span> &#x20B4;</span>
+              </div>
+              <div class="photos-order-status-subtitle text-center">
+                <span data-bind="text: cartSize()"></span><span> фото</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="photos" data-bind="event: { scroll: photosScroll }">
+        <!-- ko if: photos().length > 0 -->
+          <!-- ko foreach: photos -->
+          <div class="photos-row photos-group">
+            <!-- ko template: { name: 'photo-template', foreach: $data } -->
+            <!-- /ko -->
+          </div>
+          <!-- /ko -->
+          <div class="photos-dummy-footer">
+
+          </div>
+        <!-- /ko -->
+        <div class="photos-spinner" data-bind="visible: photos().length == 0">
+
+        </div>
+      </div>
+      <footer class="photos-footer">
+        <button class="btn btn-lg btn-default btn-photos-nav" data-bind="click: navPhotosBack">НАЗАД</button>
+        <button class="btn btn-lg btn-default btn-photos-nav" style="margin-left: 25px; margin-right: 50px;" data-bind="click: navPhotosMain">НА ГОЛОВНУ</button>
+        <button class="btn btn-lg btn-success btn-photos-nav-payment" data-bind="click: navPhotosPay, enable: cartSize() > 0">ОПЛАТИТИ</button>
+      </footer>
+    </div>
+
+    <!-- Landing hello -->
+    <div class="container form-group landing-hello" data-bind="visible: !showPhotos() && !query() && !printing()">
+      Друк фото<br>
+      з Instagram
+    </div>
+
+    <!-- Search query -->
+    <div class="container form-group landing-query" data-bind="visible: !showPhotos(), style: { top: !query() ? '40%' : '5%' }">
+      <label for="query">Пошук користувачів та хештегів#</label>
+      <input id="query" type="text" class="form-control input-lg landing-query-input" placeholder="" data-bind="textInput: query">
+    </div>
+
+  </div>
+
+  <!-- Landing background -->
+  <!-- ko if: printing() -->
+    <!-- ko component: "photo-printer" -->
+    <!-- /ko -->
+  <!-- /ko -->
+
+  <!-- Photo editor modal -->
+  <!-- ko component: "photo-editor" -->
+  <!-- /ko -->
+
+  <!-- Photo cart modal -->
+  <!-- ko component: "photo-cart" -->
+  <!-- /ko -->
+
+  <!-- Info -->
+  <!-- ko component: "info-modal" -->
+  <!-- /ko -->
+
+  <!-- Oups -->
+  <!-- ko component: "oups-modal" -->
+  <!-- /ko -->
+
+
+  <!-- Templates -->
+  <script type="text/html" id="user-search-results-template">
+    <li class="list-group-item search-results-item" data-bind="click: $root.userMedia">
+      <img class="img-circle profile-picture" data-bind="attr: { src: profile_picture, alt: username }" /><span class="profile-name" data-bind="text: username"></span>
+    </li>
+  </script>
+  <script type="text/html" id="tag-search-results-template">
+    <li class="list-group-item search-results-item" data-bind="click: $root.tagMedia">
+      <span class="tag-name" style="padding-left: 70px; float: left">#</span><span class="tag-name" data-bind="text: name"></span><br/>
+    </li>
+  </script>
+  <script type="text/html" id="photo-cart-item-template">
+    <img class="img-thumbnail photos-img" onload="$(this).data('loaded', 'loaded');" data-bind="attr: { src: media().images.standard_resolution.url }">
+    <div class="photos-cart" data-bind="css: { 'photos-cart-visible': count() > 0 }, click: initCartItem, clickBubble: false">
+      <div class="photos-cart-count-group">
+        <div style="margin: 0 auto;">
+          <button class="btn btn-lg btn-default btn-cart-count" style="background-image: url('./img/ico_minus.png');" data-bind="event: { click: decrement }, clickBubble: false"></button>
+          <span class="photos-cart-count" data-bind="text: count"></span>
+          <button class="btn btn-lg btn-default btn-cart-count" style="background-image: url('./img/ico_plus.png');" data-bind="event: { click: increment }, clickBubble: false"></button>
+        </div>
+      </div>
+      <div class="photos-cart-edit-group">
+        <button class="btn btn-lg btn-default btn-cart-edit" data-bind="event: { click: edit }, clickBubble: false">РЕДАГУВАТИ</button>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="photo-template">
+    <div class="photos-col photos-span_1_of_5" data-bind="component: { name: 'cart-item', params: { media: $data, parentIndex: $parentContext.$index(), currentIndex: $index() } }">
+    </div>
+  </script>
+  <script type="text/html" id="photo-editor-template">
+    <div class="modal fade" id="photo-editor-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog photo-editor-modal-dialog" role="document">
+        <div class="modal-content photo-editor-modal-content">
+          <img class="photo-editor-modal-close" src="./img/ico_close.png" data-bind="event: { click: close }, clickBubble: false">
+
+          <!-- ko if: $root.cartSize() > 1 -->
+          <img class="photo-editor-modal-left" src="./img/ico_left.png" data-bind="event: { click: left }, clickBubble: false">
+          <img class="photo-editor-modal-right" src="./img/ico_right.png" data-bind="event: { click: right }, clickBubble: false">
+          <!-- /ko -->
+
+          <div class="modal-body photo-editor-modal-body">
+            <img id="editor-media" class="img-responsive photo-editor-image" data-bind="attr: { src: current().src }, click: $root.spawnSession">
+            <!-- ko if: current().showDate || current().showLocation -->
+            <div style="padding-top: 15px;">
+              <!-- ko if: current().showDate -->
+              <span class="photo-editor-date" data-bind="text: current().time, click: $root.spawnSession"></span>
+              <!-- /ko -->
+              <!-- ko if: current().showLocation -->
+              <img src="./img/ico_location_glyph.png" class="photo-editor-location-glyph"><span class="photo-editor-location" data-bind="text: current().location, click: $root.spawnSession"></span>
+              <!-- /ko -->
+            </div>
+            <!-- /ko -->
+            <!-- ko if: current().showPeople -->
+            <span class="photo-editor-user" data-bind="text: current().user, click: $root.spawnSession"></span>
+            <!-- /ko -->
+            <textarea class="photo-editor-text" placeholder="Місце для підпису..." data-bind="textInput: caption, visible: current().showComments && editCaption(), event: { blur: captionBlur }"></textarea>
+            <div class="photo-editor-text photo-editor-text-readonly" data-bind="html: caption, visible: current().showComments && !editCaption(), event: { touchstart: captionFocus, click: captionFocus }"></div>
+          </div>
+          <div class="modal-footer photo-editor-modal-footer">
+            <!-- ko if: current().time -->
+            <img src="./img/ico_date.png" class="photo-editor-button" id="photo-editor-button-date" data-bind="attr: { src: buttonDate }, event: { click: toggleDate }, clickBubble: false">
+            <!-- /ko -->
+            <!-- ko if: current().location -->
+            <img src="./img/ico_location.png" class="photo-editor-button" id="photo-editor-button-location" data-bind="attr: { src: buttonLocation }, event: { click: toggleLocation }, clickBubble: false">
+            <!-- /ko -->
+            <img src="./img/ico_comments.png" class="photo-editor-button" id="photo-editor-button-comments" data-bind="attr: { src: buttonComments }, event: { click: toggleComments }, clickBubble: false">
+            <!-- ko if: current().user -->
+            <img src="./img/ico_people.png" class="photo-editor-button" id="photo-editor-button-people" data-bind="attr: { src: buttonPeople }, event: { click: togglePeople }, clickBubble: false">
+            <!-- /ko -->
+            <!-- Resize does not work yet -->
+            <img src="./img/ico_resize.png" class="photo-editor-button" style="display: none;" id="photo-editor-button-resize" data-bind="attr: { src: buttonResize }, event: { click: toggleResize }, clickBubble: false">
+            <img src="./img/ico_rotate_right.png" class="photo-editor-button" id="photo-editor-button-rotate_right" data-bind="event: { click: rotateRight }, clickBubble: false">
+            <img src="./img/ico_rotate_left.png" class="photo-editor-button" id="photo-editor-button-rotate_left" data-bind="event: { click: rotateLeft }, clickBubble: false">
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="photo-cart-component">
+    <div class="modal fade" id="photo-cart-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog photo-cart-modal-dialog" role="document">
+        <div class="modal-content photo-cart-modal-content">
+          <img class="photo-cart-modal-close" src="./img/ico_close.png" data-bind="event: { click: close }, clickBubble: false">
+
+          <div class="modal-body photo-cart-modal-body">
+
+            <div class="photo-cart-num">
+            <!-- ko text: photosCount -->
+            <!-- /ko -->
+            фото
+            </div>
+            <div class="photo-cart-cancel">
+              <div data-bind="event: { click: cancel }, clickBubble: false">ОЧИСТИТИ</div>
+            </div>
+            <div class="photo-cart-images" data-bind="foreach: images">
+              <div class="photo-cart-row photo-cart-group">
+                <!-- ko template: { name: 'photo-cart-template', foreach: $data } -->
+                <!-- /ko -->
+              </div>
+            </div>
+            <div class="photo-cart-payable">
+              <span class="photo-cart-caption-money">До сплати</span>
+              <div class="photo-cart-money photo-cart-payable-active">
+              <!-- ko text: moneyNeeded -->
+              <!-- /ko -->
+              ₴
+              </div>
+            </div>
+            <div class="photo-cart-is-money">
+              <span class="photo-cart-caption-money">Внесено</span>
+              <div class="photo-cart-money" data-bind="css: { 'photo-cart-money-active': moneyPayed() >= moneyNeeded() }, enable: moneyPayed() >= moneyNeeded()">
+              <!-- ko text: moneyPayed -->
+              <!-- /ko -->
+              ₴
+              </div>
+            </div>
+            <div class="photo-cart-print" data-bind="css: { 'photo-cart-print-active': moneyPayed() >= moneyNeeded() }, enable: moneyPayed() >= moneyNeeded(), event: { click: navPrint }, clickBubble: false">ДРУКУВАТИ</div>
+            <div class="photo-cart-bottom-text">
+              Приймаються купюри номіналом <span>від 1 до 500 грн.<br>
+              Автомат не видає решти.</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="photo-cart-template">
+    <div class="photo-cart-col photo-cart-span_1_of_4">
+      <div class="photo-cart-cancel-photo" data-bind="event: { click: $component.removeCartItem }, clickBubble: false"></div>
+      <img class="img-thumbnail photo-cart-img" onload="$(this).data('loaded', 'loaded');" data-bind="attr: { src: src }">
+    </div>
+  </script>
+  <script type="text/html" id="printer-content-template">
+      <img id="editor-media" class="img-responsive photo-editor-image" data-bind="attr: { src: src }, style: { transform: 'rotateZ(' + rotation + 'deg)' }">
+      <!-- ko if: showDate || showLocation -->
+      <div style="padding-top: 15px;">
+        <!-- ko if: showDate -->
+        <span class="photo-editor-date" data-bind="text: time"></span>
+        <!-- /ko -->
+        <!-- ko if: showLocation -->
+        <img src="./img/ico_location_glyph.png" class="photo-editor-location-glyph"><span class="photo-editor-location" data-bind="text: location"></span>
+        <!-- /ko -->
+      </div>
+      <!-- /ko -->
+      <span class="photo-editor-user" data-bind="text: user, visible: showPeople"></span>
+      <div class="photo-editor-text photo-editor-text-readonly" data-bind="html: caption, visible: showComments"></div>
+  </script>
+  <script type="text/html" id="printer-component-template">
+    <div class="top-container" id="print-container">
+      <img class="bg-print-top hidden-print" src="./img/bg_printing_top.png">
+      <img class="bg-print-bottom hidden-print" src="./img/bg_printing_bottom.png">
+      <div class="container landing-hello print-hello hidden-print">
+        Друк фото
+      </div>
+      <div class="print-content">
+        <div class="modal-body photo-editor-modal-body print-body-left print-body-transformed" data-bind="template: { name: 'printer-content-template', data: left, afterRender: partRendered }">
+        </div>
+        <div class="modal-body photo-editor-modal-body print-body-right print-body-transformed" data-bind="template: { name: 'printer-content-template', data: right, afterRender: partRendered }">
+        </div>
+      </div>
+      <div class="print-progress hidden-print">
+        <div class="print-progress-text">
+          <!-- ko text: progress -->
+          <!-- /ko -->
+          %
+        </div>
+        <div class="progress">
+          <div class="progress-bar print-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;" data-bind="attr: { 'aria-valuenow': progress }, style: { width: progress() + '%' }">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </script>
+  <script type="text/html" id="oups-template">
+    <div class="modal fade" id="oups-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog oups-modal-dialog" role="document">
+        <div class="modal-content oups-modal-content">
+          <img class="oups-modal-close" src="./img/ico_close.png" data-bind="event: { click: close }, clickBubble: false">
+
+          <div class="modal-body oups-modal-body">
+            <div class="oups-title" data-bind="html: title"></div>
+            <div class="oups-text" data-bind="html: message"></div>
+            <!-- ko if: subtext() -->
+            <div class="oups-subtext" data-bind="html: subtext"></div>
+            <!-- /ko -->
+            <!-- ko if: showButton() -->
+            <div class="oups-button-wrapper">
+              <button class="btn btn-lg btn-success oups-btn" data-bind="event: { click: yes }, clickBubble: false">ТАК</button>
+            </div>
+            <!-- /ko -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="info-template">
+    <div class="modal fade" id="info-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog info-modal-dialog" role="document">
+        <div class="modal-content info-modal-content">
+          <img class="info-modal-close" src="./img/ico_close.png" data-bind="event: { click: close }, clickBubble: false">
+
+          <div class="modal-body info-modal-body">
+            <div class="info-modal-title">
+              Вітаємо, друже!
+            </div>
+            <div class="info-modal-text">
+              BUDA - це сервіс для друку <br/>
+              фотографій з Instagram. <br/>
+              За 20 ₴ ви отримаєте <br/>
+              2 якісні фотографії <br/>
+              формату Polaroid.
+            </div>
+            <div class="info-modal-subtext">
+              Насолоджуйтеся життям <br/>
+              та друкуйте емоції!
+            </div>
+            <div class="info-modal-img">
+              <img class="center-block" src="./img/ico_photos_info.png" />
+            </div>
+            <div class="info-modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <!-- Scripts -->
+	<script src="./js/lib/jquery.min.js"></script>
+  <script src="./js/lib/underscore-min.js"></script>
+	<script src="./js/lib/bootstrap.min.js"></script>
+  <script src="./js/lib/sugar.min.js"></script>
+  <script src="./js/lib/knockout-3.3.0.js"></script>
+  <script src="./js/lib/knockout-js-infinite-scroll.js"></script>
+  <script src="./js/lib/mousetrap.min.js"></script>
+  <script src="./js/lib/velocity.min.js"></script>
+  <script src="./js/lib/velocity.ui.js"></script>
+  <script src="./js/lib/spin.min.js"></script>
+  <script src="./js/lib/jquery.keyboard.js"></script>
+  <script src="./js/lib/jquery.dotdotdot.min.js"></script>
+  <script src="./js/config.js"></script>
+	<script src="./js/utils.js"></script>
+  <script src="./js/app.js"></script>
+  <script src="./js/ssp-init.js"></script>
+  <script src="./js/keyboard.js"></script>
+  <script src="./js/searcher.js"></script>
+  <script src="./js/photos.js"></script>
+  <script src="./js/cart-item-component.js"></script>
+  <script src="./js/photo-editor-component.js"></script>
+  <script src="./js/photo-cart-component.js"></script>
+  <script src="./js/printer-component.js"></script>
+  <script src="./js/info-modal-component.js"></script>
+  <script src="./js/oups-modal-component.js"></script>
+  <script src="./js/modals.js"></script>
+
+  <!-- Init -->
+  <script type="text/javascript">
+    $(document).ready(function() {
+      App();
+    });
+  </script>
+</body>
+</html>

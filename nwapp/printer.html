@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/styles.css">
+
+</head>
+<body>
+
+  <!-- ko if: left() -->
+  <div class="modal-body photo-editor-modal-body print-body-left"  style="padding-left: 0; padding-right: 25px; padding-top: 0; padding-bottom: 0; transform: scale(0.8737864077669903)" data-bind="template: { name: 'printer-content-template', data: left, afterRender: tryPrint }">
+  </div>
+  <!-- /ko -->
+  <!-- ko if: right() -->
+  <div class="modal-body photo-editor-modal-body print-body-right" style="padding-left: 25px; padding-right: 0; padding-top: 0; padding-bottom: 0; transform: scale(0.8737864077669903)" data-bind="template: { name: 'printer-content-template', data: right, afterRender: tryPrint }">
+  </div>
+  <!-- /ko -->
+
+  <!-- Templates -->
+  <script type="text/html" id="printer-content-template">
+      <img id="editor-media" class="img-responsive photo-editor-image" onload="initPrinter.model.tryPrint();" data-bind="attr: { src: src }, css: { 'photo-editor-image-constrained': !resize }, style: { transform: 'rotateZ(' + rotation + 'deg)' }">
+      <!-- ko if: showDate || showLocation -->
+      <div style="padding-top: 15px;">
+        <!-- ko if: showDate -->
+        <span class="photo-editor-date" data-bind="text: time"></span>
+        <!-- /ko -->
+        <!-- ko if: showLocation -->
+        <img src="./img/ico_location_glyph.png" class="photo-editor-location-glyph"><span class="photo-editor-location" data-bind="text: location"></span>
+        <!-- /ko -->
+      </div>
+      <!-- /ko -->
+      <span class="photo-editor-user" data-bind="text: user, visible: showPeople"></span>
+      <div class="photo-editor-text photo-editor-text-readonly" data-bind="html: caption, visible: showComments"></div>
+  </script>
+
+  <!-- Scripts -->
+  <script src="./js/lib/jquery.min.js"></script>
+  <script src="./js/lib/underscore-min.js"></script>
+  <script src="./js/lib/bootstrap.min.js"></script>
+  <script src="./js/lib/sugar.min.js"></script>
+  <script src="./js/lib/knockout-3.3.0.js"></script>
+  <script src="./js/lib/jquery.dotdotdot.min.js"></script>
+  <script src="./js/config.js"></script>
+  <script src="./js/printer.js"></script>
+
+  <!-- Init -->
+  <script type="text/javascript">
+    $(document).ready(function() {
+      initPrinter();
+    });
+  </script>
+</body>
+</html>
